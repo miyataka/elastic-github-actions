@@ -37,6 +37,7 @@ jobs:
     strategy:
       matrix:
         elasticsearch: ["6.8-SNAPSHOT", "7.x-SNAPSHOT", "8.0.0-SNAPSHOT"]
+        plugins: ["", "analysis-kuromoji", "analysis-kuromoji analysis-icu"]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
