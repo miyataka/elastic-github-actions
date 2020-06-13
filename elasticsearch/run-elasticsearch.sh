@@ -8,6 +8,16 @@ if [[ -z $STACK_VERSION ]]; then
 fi
 
 MAJOR_VERSION=`echo ${STACK_VERSION} | cut -c 1`
+PLUGINS_STR=`echo ${PLUGINS} | sed -e 's/\n/ /g'`
+PLUGIN_INSTALL_CMD=""
+
+if [ "x${PLUGINS_STR}" != "x" ]; then
+    ARRAY=(${PLUGINS_STR})
+    for i in "${ARRAY[@]}"
+    do
+        PLUGIN_INSTALL_CMD+="elasticsearch-plugin install --batch ${i} && "
+    done
+fi
 
 docker network create elastic
 
@@ -40,7 +50,9 @@ do
       --detach \
       --network=elastic \
       --name="es${node}" \
-      docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+      --entrypoint="" \
+      docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION} \
+      sh -vc "${PLUGIN_INSTALL_CMD} /usr/local/bin/docker-entrypoint.sh"
   elif [ "x${MAJOR_VERSION}" == 'x7' ] || [ "x${MAJOR_VERSION}" == 'x8' ]; then
     docker run \
       --rm \
@@ -59,7 +71,9 @@ do
       --detach \
       --network=elastic \
       --name="es${node}" \
-      docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+      --entrypoint="" \
+      docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION} \
+      sh -vc "${PLUGIN_INSTALL_CMD} /usr/local/bin/docker-entrypoint.sh"
   fi
 done
 
