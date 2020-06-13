@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         elasticsearch: ["6.8-SNAPSHOT", "7.x-SNAPSHOT", "8.0.0-SNAPSHOT"]
+        plugins: ["", "analysis-kuromoji", "analysis-kuromoji analysis-icu"]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -24,6 +25,7 @@ jobs:
         uses: ./elasticsearch
         with:
           stack-version: ${{ matrix.elasticsearch }}
+          plugins: ${{ matrix.plugins }}
 
       - name: Elasticsearch is reachable
         run: |
@@ -51,6 +53,7 @@ jobs:
         with:
           stack-version: ${{ matrix.elasticsearch }}
           nodes: 3
+          plugins: ${{ matrix.plugins }}
 
       - name: Elasticsearch Node es1 is reachable
         run: |
